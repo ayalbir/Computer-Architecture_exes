@@ -15,8 +15,8 @@ int main() {
     scanf("%d", &x);
     // use the seed to generate a random number between 0 and N
     srand(x);
-    // Generate a random number between 0 and n (inclusive)
-    int random_number = rand() % (N + 1);
+    // Generate a random number between 0 and n (exclusive)
+    int random_number = rand() % (N);
     int winCheck = 0;
     // now that we have the number, we can really start the game.
     for (int i = 0; i < M; i++)
