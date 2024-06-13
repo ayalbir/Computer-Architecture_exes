@@ -26,7 +26,7 @@ swapCase:
     movq %rsp, %rbp
 
     # as before, rdi is the pstrign
-    movq %rdi, %r8 # save the pointer
+    movq %rdi, %r10 # save the pointer
     incq %rdi # we want the string, not the char
 
 loop1:
@@ -35,31 +35,32 @@ loop1:
 
     # If we're at the end of the string, exit
     cmpb $0x0, %al
-    je .end1
-    cmp al,'a'
+    je end1
+    cmp %al,'a'
     jb maybe_upper
-    cmp al,'z'
+    cmp %al,'z'
     ja next1
-    sub al,0x20
+    sub $0x20, %al
     //need to look on this again
-    movb al, (%rdi)
-    jne .next
+    movb %al, (%rdi)
+    jne next1
 
 maybe_upper:
-    cmp al,'A'
+    cmp %al,'A'
     jb next1
-    cmp al,'Z'
+    cmp %al,'Z'
     ja next1
-    add al,0x20
-    movb al, (%rdi)
-    jne .next
+    add $0x20, %al
+    movb %al, (%rdi)
+    jne next1
+    
 next1:
     # Increment the pointer, and continue to next iteration
     incq %rdi
     jmp loop1
 
 end1:
-    movq %r8, %rax
+    movq %r10, %rax
     movq %rbp, %rsp
     popq %rbp
     ret
@@ -94,8 +95,8 @@ pstrijcpy:
     cmp (%rsi), %rcx
     jl wrng_end
 
-    movq %rdi, %r9 #save the pointer
-    movq %rsi, %r10 #save the pointer
+    movq %rdi, %r11 #save the pointer
+    movq %rsi, %r12 #save the pointer
 
     #now advance to the string itself
     incq %rdi
@@ -119,7 +120,7 @@ loop2:
 
 
 wrng_end:
-    movq $inavlid %rdi
+    movq $inavlid, %rdi
     xorq %rax, %rax
     call printf
     movq %rbp, %rsp
@@ -127,7 +128,7 @@ wrng_end:
     ret
 
 end2:
-    movq %r9, %rax
+    movq %r11, %rax
     movq %rbp, %rsp
     popq %rbp
     ret
