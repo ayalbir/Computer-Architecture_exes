@@ -1,13 +1,4 @@
-// this is the function that selects the function to do based on the input in the main. the function themselves are implemented in the pstrings.s file
-// so guess will need to import the functions from the pstrings.s file
-// well it doesn't seem to be variadic functions so I can just call them directly
-
-// need to do switch case on 31, 33 and 34. every other option is invalid.
-
-// there is run_func (and also main?)
-
 /* 214104226 Ayal Birenstock */
-
 .extern printf
 .extern scanf
 .extern pstrlen
@@ -18,7 +9,7 @@
 ch_31: .string "first pstring length: %d, second pstring length : %d\n"
 ch_33: .string "length: %d, string: %s\n"
 ch_34: .string "%d %d"
-gg: .string "invaild option!\n"
+gg: .string "invalid option!\n"
 
 .section .text
 .global run_func
@@ -86,57 +77,87 @@ run_func:
 
 
 .case_34:
-    #since there is no data section, we will need to use the stack
-    #the args are rdi, rsi, rdx, rcx, r8, r9
-    #we have      ch,  p1, p2
-    #save the pstrings
-    movq %rsi, %r10
-    movq %rdx, %r11
-    #get the length of the strings
+    # save the strings 
+    movq %rsi, %r15
+    movq %rdx, %r12
+
+    # get the length of the strings
     movq %rsi, %rdi
     call pstrlen
-    movq %rax, %r12
+    movq %rax, %r13
     movq %rdx, %rdi
     call pstrlen
-    movq %rax, %r13
+    movq %rax, %r14
 
+    # save the strings in the stack
+    sub $16, %rsp
     movq $ch_34, %rdi
-    #now need place in the stack to save i and j
-    subq $8, %rsp
-    #assuming we are getting integers
-    movq -8(%rbp), %rsi
-    movq -4(%rbp), %rdx
+    leaq -16(%rbp), %rsi
+    leaq -12(%rbp), %rdx
     xorq %rax, %rax
     call scanf
-    #now we have the values in the stack, we can use them
-    movq %r11, %rdi
-    movq %r10, %rsi
-    movq -8(%rbp), %rdx
-    movq -4(%rbp), %rcx
+
+    # check if valid
+    movq %r15, %rdi
+    movq %r12, %rsi
+    movzbq -16(%rbp), %rdx
+    movzbq -12(%rbp), %rcx
+
+    # check if j\ge i
+    cmpq %rdx, %rcx
+    jl invalid_opt34
+    # check if i\ge 0 and j\ge 0
+    cmpq %rcx, %r13
+    jl invalid_opt34
+    cmpq %rcx, %r14
+    jl invalid_opt34
     call pstrijcpy
 
-    #now we can print the result
+    # print the strings
     movq $ch_33, %rdi
-    movq %r12, %rsi
-    movq %r10, %rdx
+    movq %r13, %rsi
+    movq %r15, %rdx
     xorq %rax, %rax
     call printf
 
     movq $ch_33, %rdi
-    movq %r13, %rsi
-    movq %r11, %rdx
+    movq %r14, %rsi
+    movq %r12, %rdx
     xorq %rax, %rax
     call printf
     jmp .end
 
-.invalid:
+invalid_opt34:
+    # print invalid
     movq $gg, %rdi
     xorq %rax, %rax
     call printf
+
+    # print the strings
+    movq $ch_33, %rdi
+    movq %r13, %rsi
+    movq %r15, %rdx
+    xorq %rax, %rax
+    call printf
+
+    # print the strings
+    movq $ch_33, %rdi
+    movq %r14, %rsi
+    movq %r12, %rdx
+    xorq %rax, %rax
+    call printf
+    jmp .end
+
+
+.invalid:
+    # print invalid
+    xorq %rax, %rax
+    movq  $gg, %rdi
+    call printf
+    jmp .end
 
 .end:
     xorq %rax, %rax
     movq %rbp, %rsp
     popq %rbp
     ret
-    
