@@ -30,29 +30,29 @@ swapCase:
     incq %rdi # we want the string, not the char
 
 loop1:
-    # Read byte from string
-    movb (%rdi), %al
-
     # If we're at the end of the string, exit
-    cmpb $0x0, %al
+    cmpb $0x0, (%rdi)
     je end1
-    cmp %al,'a'
-    jb maybe_upper
-    cmp %al,'z'
-    ja next1
-    sub $0x20, %al
-    //need to look on this again
+    # Read byte from string
+  
+    cmpb $'a', (%rdi)
+    jl maybe_upper
+    cmpb $'z', (%rdi)
+    jg next1
+    movb (%rdi), %al
+    add $-0x20, %al
     movb %al, (%rdi)
-    jne next1
+    jmp next1
 
 maybe_upper:
-    cmp %al,'A'
-    jb next1
-    cmp %al,'Z'
-    ja next1
+    cmpb $'A', (%rdi)
+    jl next1
+    cmpb $'Z', (%rdi)
+    jg next1
+    movb (%rdi), %al
     add $0x20, %al
     movb %al, (%rdi)
-    jne next1
+    jmp next1
     
 next1:
     # Increment the pointer, and continue to next iteration
