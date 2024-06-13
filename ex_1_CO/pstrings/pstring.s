@@ -1,20 +1,7 @@
-// the implementation of the functions 
-// all good. 
-// pstrlen - length of the string
-// swapCase - every capital letter becomes small and vice versa
-// pstrijcpy - Given pointers to two Pstrings, and two indices, the function copies src[i:j]
-// into dst[i:j] and returns the pointer to dst. If either i or j are invalid given src and dst
-// sizes, no changes should be made to dst, and the following message message should
-// be printed: "invalid input!\n".
-
-// OF CURSE, no use of the standard library functions is allowed.
-
-// useing the stack is basically the only way to do this (and the only way allowed).
-
-//is there suppose to be main?
-
-//if want, create here a rodata with the gap of ascii between the capital and small letters, wich is 32, and in hex is 0x20
+/* 214104226 Ayal Birenstock */
 .extern printf
+.section .rodata
+inavlid: .string "invaild input!\n"
 .section .text
 .global pstrlen
 .type pstrlen, @function
@@ -39,7 +26,7 @@ swapCase:
     movq %rsp, %rbp
 
     # as before, rdi is the pstrign
-    movq %rdi, %r13 # save the pointer
+    movq %rdi, %r8 # save the pointer
     incq %rdi # we want the string, not the char
 
 loop1:
@@ -52,7 +39,7 @@ loop1:
     cmp al,'a'
     jb maybe_upper
     cmp al,'z'
-    ja next2
+    ja next1
     sub al,0x20
     //need to look on this again
     movb al, (%rdi)
@@ -60,19 +47,19 @@ loop1:
 
 maybe_upper:
     cmp al,'A'
-    jb next2
+    jb next1
     cmp al,'Z'
-    ja next2
+    ja next1
     add al,0x20
     movb al, (%rdi)
     jne .next
-next2:
+next1:
     # Increment the pointer, and continue to next iteration
     incq %rdi
     jmp loop1
 
-end2:
-    movq %r13, %rax
+end1:
+    movq %r8, %rax
     movq %rbp, %rsp
     popq %rbp
     ret
@@ -81,3 +68,67 @@ end2:
 .global pstrijcpy
 .type pstrijcpy, @function
 pstrijcpy:
+    #the args are rdi, rsi, rdx, rcx
+    #the meaning: dst, src, i  , j
+    # calle, backup
+    pushq %rbp
+    movq %rsp, %rbp
+    #first, we will check if the input is vaild
+    #we need: 0 \leq i,j \leq |src|, |dst|
+    #q, what if (and probably will) j < i?
+    #we know that the sizes are saved in the first arg in the pstring
+    #try:
+    cmp $0, %rdx
+    // we need to jump if rdx < 0
+    jge wrng_end
+    cmp $0, %rcx
+    // same
+    jge wrng_end
+    cmp (%rdi), %rdx
+    // we need to jump if rdx > (%rdi)
+    jl wrng_end
+    cmp (%rdi), %rcx
+    jl wrng_end
+    cmp (%rsi), %rdx
+    jl wrng_end
+    cmp (%rsi), %rcx
+    jl wrng_end
+
+    movq %rdi, %r9 #save the pointer
+    movq %rsi, %r10 #save the pointer
+
+    #now advance to the string itself
+    incq %rdi
+    incq %rsi
+    # now advanced to i in the string
+    addq %rdx, %rdi
+    addq %rdx, %rsi
+
+loop2:
+    # replacr the char in dst with src
+    movb (%rsi), %al
+    movb %al, (%rdi)
+    incq %rdi
+    incq %rsi
+    # advance to the next char, and check if we are done
+    incq %rdx
+    cmp %rcx, %rdx
+    jl loop2
+    jmp end2
+
+
+
+wrng_end:
+    movq $inavlid %rdi
+    xorq %rax, %rax
+    call printf
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+end2:
+    movq %r9, %rax
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
