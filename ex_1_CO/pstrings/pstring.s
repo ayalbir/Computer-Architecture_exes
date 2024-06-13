@@ -1,7 +1,7 @@
 /* 214104226 Ayal Birenstock */
 .extern printf
 .section .rodata
-inavlid: .string "invaild input!\n"
+inavlid: .string "invalid input!\n"
 .section .text
 .global pstrlen
 .type pstrlen, @function
@@ -74,62 +74,27 @@ pstrijcpy:
     # calle, backup
     pushq %rbp
     movq %rsp, %rbp
-    #first, we will check if the input is vaild
-    #we need: 0 \leq i,j \leq |src|, |dst|
-    #q, what if (and probably will) j < i?
-    #we know that the sizes are saved in the first arg in the pstring
-    #try:
-    cmp $0, %rdx
-    // we need to jump if rdx < 0
-    jge wrng_end
-    cmp $0, %rcx
-    // same
-    jge wrng_end
-    cmp (%rdi), %rdx
-    // we need to jump if rdx > (%rdi)
-    jl wrng_end
-    cmp (%rdi), %rcx
-    jl wrng_end
-    cmp (%rsi), %rdx
-    jl wrng_end
-    cmp (%rsi), %rcx
-    jl wrng_end
-
-    movq %rdi, %r11 #save the pointer
-    movq %rsi, %r12 #save the pointer
-
-    #now advance to the string itself
-    incq %rdi
-    incq %rsi
-    # now advanced to i in the string
-    addq %rdx, %rdi
+    movq %rdi, %r8
     addq %rdx, %rsi
-
-loop2:
-    # replacr the char in dst with src
-    movb (%rsi), %al
-    movb %al, (%rdi)
+    addq %rdx, %rdi
     incq %rdi
     incq %rsi
-    # advance to the next char, and check if we are done
+    jmp .loop2
+    
+.loop2:
+    movb (%rsi), %al
+    movb %al,(%rdi)
+    incq %rsi
+    incq %rdi
     incq %rdx
-    cmp %rcx, %rdx
-    jl loop2
-    jmp end2
-
-
-
-wrng_end:
-    movq $inavlid, %rdi
-    xorq %rax, %rax
-    call printf
-    movq %rbp, %rsp
-    popq %rbp
-    ret
+    
+    # check if i \le j
+    cmpq %rdx, %rcx
+    jl end2
+    jmp .loop2
 
 end2:
     movq %r11, %rax
     movq %rbp, %rsp
     popq %rbp
     ret
-
