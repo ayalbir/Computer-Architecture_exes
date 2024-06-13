@@ -14,37 +14,35 @@
 //is there suppose to be main?
 
 //if want, create here a rodata with the gap of ascii between the capital and small letters, wich is 32, and in hex is 0x20
+.extern printf
 .section .text
 .global pstrlen
 .type pstrlen, @function
 pstrlen:
-    //assuming that the arg is currently in rdi
-    xorq %rax, %rax
-loop1:
-    #straight from the tirgul
-    # Read byte from string
+    # calle, backup
+    pushq %rbp
+    movq %rsp, %rbp
+
+    # the first arg inside the pstring is the char, said to be at max size of 254
     movb (%rdi), %al
 
-    # If we're at the end of the string, exit
-    cmpb $0x0, %al
-    je .end1
-    jne .next
-next1:
-    # Increment the pointer, and continue to next iteration
-    incq %rdi
-    inc %rax
-    jmp loop1
-
-end1:
+    movq %rbp, %rsp
+    popq %rbp
     ret
 
 
 .global swapCase
 .type swapCase, @function
 swapCase:
-    //assuming that the arg is currently in rdi
-    xorq %rax, %rax
-loop2:
+    # calle, backup
+    pushq %rbp
+    movq %rsp, %rbp
+
+    # as before, rdi is the pstrign
+    movq %rdi, %r13 # save the pointer
+    incq %rdi # we want the string, not the char
+
+loop1:
     # Read byte from string
     movb (%rdi), %al
 
@@ -71,10 +69,12 @@ maybe_upper:
 next2:
     # Increment the pointer, and continue to next iteration
     incq %rdi
-    inc %rax
     jmp loop1
 
 end2:
+    movq %r13, %rax
+    movq %rbp, %rsp
+    popq %rbp
     ret
 
 
