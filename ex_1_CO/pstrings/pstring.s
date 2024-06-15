@@ -18,50 +18,45 @@ pstrlen:
     ret
 
 
-.global swapCase
-.type swapCase, @function
+.globl swapCase
+.type   swapCase, @function
 swapCase:
-    # calle, backup
-    pushq %rbp
+    pushq %rbp      # callee conv. backup RBP and set RBP to Activation Frame
     movq %rsp, %rbp
+    movq %rdi, %r8 # save the pointer to the pstring
 
-    # as before, rdi is the pstrign
-    movq %rdi, %r10 # save the pointer
-    incq %rdi # we want the string, not the char
+    //the problem: for some reason al is the size of the string, and rdi isnt increased to point on the string.
 
-loop1:
-    # If we're at the end of the string, exit
-    cmpb $0x0, (%rdi)
-    je end1
-    # Read byte from string
-  
-    cmpb $'a', (%rdi)
-    jl maybe_upper
-    cmpb $'z', (%rdi)
-    jg next1
-    movb (%rdi), %al
-    add $-0x20, %al
-    movb %al, (%rdi)
-    jmp next1
+    //rdi is an arg to the func, it's a pointer to pstring. we don't want to loose to pointer, but also, we want the damn string to change! what can we do? we already saved the pointer in r8, so what the hell, y this isnt working??
 
-maybe_upper:
-    cmpb $'A', (%rdi)
-    jl next1
-    cmpb $'Z', (%rdi)
-    jg next1
-    movb (%rdi), %al
-    add $0x20, %al
-    movb %al, (%rdi)
-    jmp next1
-    
-next1:
-    # Increment the pointer, and continue to next iteration
     incq %rdi
-    jmp loop1
+    jmp .loop
 
-end1:
-    movq %r10, %rax
-    movq %rbp, %rsp
+.loop:
+    cmpb $0x0,(%rdi)   # if the char is null nothing to change
+    je exit
+    cmpb $'A',(%rdi)    # check if maybe it is not letters
+    jl .next
+    cmpb $'z',(%rdi)    # check if it is not letters
+    jg .next    
+    cmpb $'a',(%rdi)     # check if it is lower case
+    jge  upperCase    # if it is lower case then change to upper
+    movb (%rdi), %al
+    addb $0x20, %al
+    movb %al, (%rdi) # change to lower case
+    jmp .next
+upperCase:
+    movb (%rdi), %al
+    addb $-0x20, %al
+    movb %al, (%rdi) # change to upper case
+    jmp .next
+
+.next:
+    incq %rdi
+    jmp .loop
+exit:
+    movq %r8, %rax # return the pointer to the string
+    movq %rbp, %rsp # callee conv. free activation frame and restore main frame
     popq %rbp
     ret
 
@@ -98,3 +93,4 @@ end2:
     movq %rbp, %rsp
     popq %rbp
     ret
+    

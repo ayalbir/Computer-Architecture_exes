@@ -11,7 +11,7 @@ user_guess: .long
 fm: .string "Enter configuration seed: "
 scanf_fmt: .string "%d"
 que:  .string "What is your guess? "
-wn: .string "Congratz! You Won!\n"
+wn: .string "Congratz! You won!\n"
 wr:  .string "Incorrect.\n"
 lst:  .string "Game over, you lost :(. The correct answer was %d\n"
 

@@ -6,10 +6,11 @@
 .extern pstrijcpy
 
 .section .rodata
-ch_31: .string "first pstring length: %d, second pstring length : %d\n"
+ch_31: .string "first pstring length: %d, second pstring length: %d\n"
 ch_33: .string "length: %d, string: %s\n"
 ch_34: .string "%d %d"
 gg: .string "invalid option!\n"
+np: .string "invalid input!\n"
 
 .section .text
 .global run_func
@@ -48,16 +49,16 @@ run_func:
 .case_33:
     #still need the length of both strings
     movq %rsi, %rdi
-    movq %rsi, %r13
+    movq %rsi, %r13 #save the pointer
     call pstrlen
     movq %rax, %r14 #save for later
 
 
-    movq %rdx, %r15
+    movq %rdx, %r15 #save the pointer
     movq %r13, %rdi
     call swapCase
+
     movq $ch_33, %rdi
-    
     movq %r14, %rsi
     movq %r13, %rdx
     xorq %rax, %rax
@@ -152,7 +153,7 @@ invalid_opt34:
 .invalid:
     # print invalid
     xorq %rax, %rax
-    movq  $gg, %rdi
+    movq  $np, %rdi
     call printf
     jmp .end
 
