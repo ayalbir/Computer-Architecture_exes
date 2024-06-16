@@ -134,7 +134,7 @@ run_func:
 
 invalid_opt34:
     # print invalid
-    movq $gg, %rdi
+    movq $np, %rdi
     xorq %rax, %rax
     call printf
 
@@ -159,7 +159,7 @@ invalid_opt34:
 .invalid:
     # print invalid
     xorq %rax, %rax
-    movq  $np, %rdi
+    movq  $gg, %rdi
     call printf
     jmp .end
 
