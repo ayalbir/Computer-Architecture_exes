@@ -60,6 +60,7 @@ run_func:
 
     movq $ch_33, %rdi
     movq %r14, %rsi
+    incq %r13 # move forward to the string itself
     movq %r13, %rdx
     xorq %rax, %rax
     call printf
@@ -71,6 +72,7 @@ run_func:
     call swapCase
     movq $ch_33, %rdi
     movq %r14, %rsi
+    incq %r15 # move forward to the string itself
     movq %r15, %rdx
     xorq %rax, %rax
     call printf
@@ -117,12 +119,14 @@ run_func:
     # print the strings
     movq $ch_33, %rdi
     movq %r13, %rsi
+    incq %r15 # move forward to the string itself
     movq %r15, %rdx
     xorq %rax, %rax
     call printf
 
     movq $ch_33, %rdi
     movq %r14, %rsi
+    incq %12 # move forward to the string itself
     movq %r12, %rdx
     xorq %rax, %rax
     call printf
