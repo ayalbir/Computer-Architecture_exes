@@ -126,7 +126,7 @@ run_func:
 
     movq $ch_33, %rdi
     movq %r14, %rsi
-    incq %12 # move forward to the string itself
+    incq %r12 # move forward to the string itself
     movq %r12, %rdx
     xorq %rax, %rax
     call printf
