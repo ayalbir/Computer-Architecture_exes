@@ -143,7 +143,6 @@ invalid_opt34:
     movq %r13, %rsi
     incq %r15 # move forward to the string itself
     movq %r15, %rdx
-    movq %r15, %rdx
     xorq %rax, %rax
     call printf
 
@@ -151,7 +150,6 @@ invalid_opt34:
     movq $ch_33, %rdi
     movq %r14, %rsi
     incq %r12 # move forward to the string itself
-    movq %r12, %rdx
     movq %r12, %rdx
     xorq %rax, %rax
     call printf
