@@ -1,5 +1,3 @@
-# README
-
 ## Computer Architecture Assignment 1
 
 ### Overview
@@ -117,12 +115,6 @@ In this part, a simple string library is implemented in assembly. The tasks incl
     Length: 5, string: hELLO
     Length: 5, string: wORLD
     ```
-
-### Submission
-The assignment is submitted as a zip file containing:
-- `main.s`: The assembly code for the number guessing game.
-- `pstrings.s` and `func_select.s`: The assembly code for the string library.
-- `Makefile`: To compile the string library.
 
 ### Conclusion
 This README provides an overview of the tasks completed in the assignment, showcasing the implementation details and guidelines followed. Detailed instructions and example usages are provided to demonstrate how to compile and run the code for each part.
