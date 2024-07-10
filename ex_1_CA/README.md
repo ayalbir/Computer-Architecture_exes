@@ -1,4 +1,4 @@
-## Computer Architecture Assignment 1
+# Computer Architecture Assignment 1
 
 ### Overview
 This assignment consists of two parts:
