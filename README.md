@@ -8,7 +8,7 @@ This repository contains my solutions for various computer architecture assignme
 - Basic number guessing game implemented in assembly.
 - Simple string library with various string manipulation functions.
 
-### [Assignment 2: Binary Bomb Disassemble](./ex_2_CA/)
+### [Assignment 2: Binary Bomb Disassemble](./ex_2_CA/README.md)
 - Reverse engineering and disassembling a binary bomb.
 - Detailed steps and analysis without submission of files (since there is no file to submit).
 
