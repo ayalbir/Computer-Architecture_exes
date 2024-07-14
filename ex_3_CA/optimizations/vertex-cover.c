@@ -4,46 +4,40 @@
 
 #define MAX_VERTICES 100
 
-bool isVertexCover(int graph[MAX_VERTICES][MAX_VERTICES], int n, int cover[], int k)
-{
-    bool edges_covered[MAX_VERTICES][MAX_VERTICES] = {false};
+#define INDEX(x, y, n) ((x) * (n) + (y))
+
+bool isVertexCover(int graph[MAX_VERTICES][MAX_VERTICES], int n, int cover[], int k) {
+    bool edges_covered[MAX_VERTICES * MAX_VERTICES] = {false};
 
     // Check for covered edges
     int i = 0;
-    while (i <= k - 2)
-    {
+    while (i <= k - 2) {
         int v0 = cover[i];
         int v1 = cover[i + 1];
 
         int *graph_v0 = graph[v0];
         int *graph_v1 = graph[v1];
 
-        for (int j = 0; j < n; j++)
-        {
-            if (graph_v0[j])
-            {
-                edges_covered[v0][j] = true;
-                edges_covered[j][v0] = true;
+        for (int j = 0; j < n; j++) {
+            if (graph_v0[j]) {
+                edges_covered[INDEX(v0, j, n)] = true;
+                edges_covered[INDEX(j, v0, n)] = true;
             }
-            if (graph_v1[j])
-            {
-                edges_covered[v1][j] = true;
-                edges_covered[j][v1] = true;
+            if (graph_v1[j]) {
+                edges_covered[INDEX(v1, j, n)] = true;
+                edges_covered[INDEX(j, v1, n)] = true;
             }
         }
         i += 2;
     }
 
-    while (i < k)
-    {
+    while (i < k) {
         int v = cover[i];
         int *graph_v = graph[v];
-        for (int j = 0; j < n; j++)
-        {
-            if (graph_v[j])
-            {
-                edges_covered[v][j] = true;
-                edges_covered[j][v] = true;
+        for (int j = 0; j < n; j++) {
+            if (graph_v[j]) {
+                edges_covered[INDEX(v, j, n)] = true;
+                edges_covered[INDEX(j, v, n)] = true;
             }
         }
         i++;
@@ -51,18 +45,12 @@ bool isVertexCover(int graph[MAX_VERTICES][MAX_VERTICES], int n, int cover[], in
 
     // Check if all edges are covered
     i = 0;
-    while (i < n)
-    {
-        bool *edges_covered_i = edges_covered[i];
+    while (i < n) {
         int j = i + 1;
-        while (j <= n - 2)
-        {
-            // store the conditions in variables to avoid redundant computation
-            bool not_covered_ij = !edges_covered_i[j] || !edges_covered[j][i];
-            bool not_covered_ij1 = !edges_covered_i[j + 1] || !edges_covered[j + 1][i];
-            if ((graph[i][j] && not_covered_ij) ||
-                (graph[i][j + 1] && not_covered_ij1))
-            {
+        while (j <= n - 2) {
+            bool not_covered_ij = !edges_covered[INDEX(i, j, n)] || !edges_covered[INDEX(j, i, n)];
+            bool not_covered_ij1 = !edges_covered[INDEX(i, j + 1, n)] || !edges_covered[INDEX(j + 1, i, n)];
+            if ((graph[i][j] && not_covered_ij) || (graph[i][j + 1] && not_covered_ij1)) {
                 return false;
             }
 
@@ -70,8 +58,7 @@ bool isVertexCover(int graph[MAX_VERTICES][MAX_VERTICES], int n, int cover[], in
         }
 
         // if n is odd
-        if (j < n && graph[i][j] && (!edges_covered_i[j] || !edges_covered[j][i]))
-        {
+        if (j < n && graph[i][j] && (!edges_covered[INDEX(i, j, n)] || !edges_covered[INDEX(j, i, n)])) {
             return false;
         }
 
@@ -80,6 +67,7 @@ bool isVertexCover(int graph[MAX_VERTICES][MAX_VERTICES], int n, int cover[], in
 
     return true;
 }
+
 
 void generateCombinations(int n, int k, int cover[], int start, int currentSize,
                           int graph[MAX_VERTICES][MAX_VERTICES], int *minCover, int *minSize)
@@ -99,8 +87,8 @@ void generateCombinations(int n, int k, int cover[], int start, int currentSize,
         }
         return;
     }
-
-    for (int i = start; i < n; i++)
+    int max = n - (k - currentSize);
+    for (int i = start; i <= max; i++)
     {
         cover[currentSize] = i;
         generateCombinations(n, k, cover, i + 1, currentSize + 1, graph, minCover, minSize);
